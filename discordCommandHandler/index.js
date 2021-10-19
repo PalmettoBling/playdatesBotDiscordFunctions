@@ -31,10 +31,10 @@ module.exports = async function (context, req) {
             body: {
                 "type": 4,
                 "data": {
-                    "tts": False,
-                    "content": `${messageBack}`,
-                    "embeds": [],
-                    "allow_mentions": {"parse": []}
+                    tts: false,
+                    content: `${messageBack}`,
+                    embeds: [],
+                    allow_mentions: {parse: []}
                 }
             }
         };
@@ -49,8 +49,10 @@ async function handleCommand(context, commandData) {
             context.log("Have playhost: " + playHost);
             const game = commandData.options[1].value;
             context.log("Have game: " + game);
-            await axios.put('https://www.xboxplaydates.us/ambassadorschedule/discord', 
-                {hostName: `${playHost}`, gameName: `${game}`})
+            axios.put('https://www.xboxplaydates.us/ambassadorschedule/discord', 
+                {
+                    hostName: `${playHost}`, gameName: `${game}`
+                })
                 .then(res => {
                     if (res.status(200)) {
                         context.log("Status 200");
