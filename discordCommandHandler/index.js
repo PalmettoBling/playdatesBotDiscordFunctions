@@ -24,7 +24,7 @@ module.exports = async function (context, req) {
             body: {"type": 1 }
         };
     } else {
-        messageBack = await handleCommand(req.body.data.name);
+        messageBack = await handleCommand(context, req.body.data.name);
         context.log("messageBack: " + messageBack);
         return context.res = {
             status: 200, 
@@ -41,7 +41,7 @@ module.exports = async function (context, req) {
     }
 }
 
-async function handleCommand(commandName) {
+async function handleCommand(context, commandName) {
     switch(commandName) {
         case 'gameplan':
             context.log(`Valid request, type: ${req.body.type}`);
