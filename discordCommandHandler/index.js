@@ -24,7 +24,7 @@ module.exports = async function (context, req) {
             body: {"type": 1 }
         };
     } else {
-        messageBack = await handleCommand(context, req.body.data.name);
+        messageBack = await handleCommand(context, req.body.data);
         context.log("messageBack: " + messageBack);
         return context.res = {
             status: 200, 
@@ -41,21 +41,24 @@ module.exports = async function (context, req) {
     }
 }
 
-async function handleCommand(context, commandName) {
-    switch(commandName) {
+async function handleCommand(context, commandData) {
+    switch(commandData.name) {
         case 'gameplan':
-            context.log(`Valid request, type: ${req.body.type}`);
-            const playHost = req.body.data.options[0].value;
+            context.log("Switch GamePlan");
+            const playHost = commandData.options[0].value;
             context.log("Have playhost: " + playHost);
-            const game = req.body.data.options[1].value;
+            const game = commandData.options[1].value;
             context.log("Have game: " + game);
-            axios.put('https://www.xboxplaydates.us/ambassadorschedule/discordShowUpdate', 
+            await axios.put('https://www.xboxplaydates.us/ambassadorschedule/discord', 
                 {hostName: `${playHost}`, gameName: `${game}`})
                 .then(res => {
                     if (res.status(200)) {
                         context.log("Status 200");
                         context.log(res.body);
                         return `${res.body.title} on ${res.body.date} has been updated to ${res.body.game}`;
+                    }
+                    else {
+                        return `Error with something...`;
                     }
             });
             break;
