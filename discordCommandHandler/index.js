@@ -24,45 +24,24 @@ module.exports = async function (context, req) {
             body: {"type": 1 }
         };
     } else {
-        messageBack = await handleCommand(context, req.body.data);
-        context.log("messageBack: " + messageBack);
-        return context.res = {
-            status: 200, 
+        context.res = {
+            status: 200,
             body: {
-                "type": 4,
+                "type": 5,
                 "data": {
-                    tts: false,
-                    content: `${messageBack}`,
-                    embeds: [],
-                    allow_mentions: {parse: []}
+                    "tts": false,
+                    "content": "Working on your request",
+                    "embeds": [],
+                    "allowed_mentions": { "parse": [] }
                 }
             }
         };
-    }
-}
-
-async function handleCommand(context, commandData) {
-    switch(commandData.name) {
-        case 'gameplan':
-            context.log("Switch GamePlan");
-            const playHost = commandData.options[0].value;
-            context.log("Have playhost: " + playHost);
-            const game = commandData.options[1].value;
-            context.log("Have game: " + game);
-            axios.put('https://www.xboxplaydates.us/ambassadorschedule/discord', 
-                {
-                    hostName: `${playHost}`, gameName: `${game}`
-                })
-                .then(res => {
-                    if (res.status(200)) {
-                        context.log("Status 200");
-                        context.log(res.body);
-                        return `${res.body.title} on ${res.body.date} has been updated to ${res.body.game}`;
-                    }
-                    else {
-                        return `Error with something...`;
-                    }
-            });
-            break;
+        // req.body.data.name = name of slash function from discord
+        axios.post(`https://playdatesbotdiscord.azurewebsites.net/api/${req.body.data.name}`, {
+            hostName: req.body.data.options[0].value,
+            gameName: req.body.data.options[1].value,
+            applicationId: req.body.application_id,
+            interaction_token: req.body.token
+        });
     }
 }
