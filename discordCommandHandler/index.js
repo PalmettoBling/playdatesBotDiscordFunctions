@@ -33,8 +33,6 @@ module.exports = async function (context, req) {
             context.log.error("ERROR", err);
             throw err;
         }
-        
-        context.log("After res.send");
 
         // req.body.data.name = name of slash function from discord
         // Need to send all options array to process if there are more than 2 options in command...
