@@ -9,7 +9,7 @@ module.exports = async function (context, req) {
     const rawBody = req.rawBody;
 
     context.log('Headers: ' + JSON.stringify(req.headers));
-    context.log('Raw Body: ' + JSON.stringify(rawBody));
+    context.log('Raw Body: ' + JSON.stringify(req.body));
 
     const verifiedRequest = await verifyKey(rawBody, signature, timestamp, process.env.PUBLICKEY);
 
@@ -25,22 +25,18 @@ module.exports = async function (context, req) {
         };
     } else {
         context.res = {
-            status: 200,
             body: {
-                "type": 5,
+                "type": 4,
                 "data": {
-                    "tts": false,
-                    "content": "Working on your request",
-                    "embeds": [],
-                    "allowed_mentions": { "parse": [] }
+                    "content": "Working on your request..."
                 }
             }
         };
+
         // req.body.data.name = name of slash function from discord
         axios.post(`https://playdatesbotdiscord.azurewebsites.net/api/${req.body.data.name}`, {
             hostName: req.body.data.options[0].value,
             gameName: req.body.data.options[1].value,
-            applicationId: req.body.application_id,
             interaction_token: req.body.token
         });
     }
