@@ -8,8 +8,8 @@ module.exports = async function (context, req) {
     const timestamp = req.headers['x-signature-timestamp'];
     const rawBody = req.rawBody;
 
-    context.log('Headers: ' + JSON.stringify(req.headers));
-    context.log('Raw Body: ' + JSON.stringify(req.body));
+    context.log('Raw Body: ');
+    context.log(JSON.stringify(req.body));
 
     const verifiedRequest = await verifyKey(rawBody, signature, timestamp, process.env.PUBLICKEY);
 
@@ -24,6 +24,7 @@ module.exports = async function (context, req) {
             body: {"type": 1 }
         };
     } else {
+        context.log(`Message type ${req.body.type}, responding and triggering function`)
         context.res = {
             body: {
                 "type": 4,
@@ -34,6 +35,7 @@ module.exports = async function (context, req) {
         };
 
         // req.body.data.name = name of slash function from discord
+        // Need to send all options array to process if there are more than 2 options in command...
         axios.post(`https://playdatesbotdiscord.azurewebsites.net/api/${req.body.data.name}`, {
             hostName: req.body.data.options[0].value,
             gameName: req.body.data.options[1].value,
