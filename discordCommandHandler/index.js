@@ -11,7 +11,7 @@ module.exports = async function (context, req) {
     context.log('Req Body: ');
     context.log(JSON.stringify(req.body));
 
-    const verifiedRequest = await verifyKey(rawBody, signature, timestamp, process.env.PUBLICKEY);
+    const verifiedRequest = verifyKey(rawBody, signature, timestamp, process.env.PUBLICKEY);
 
     if (!verifiedRequest) {
         context.log("Invalid request signature");
@@ -21,19 +21,27 @@ module.exports = async function (context, req) {
     } else if (req.body.type == 1) {
         context.log(`Message type ${req.body.type}, sending ACK type 1`);
         return context.res = { 
-            body: {"type": 1 }
+            body: { "type": 1 }
         };
     } else {
         context.log(`Message type ${req.body.type}, responding and triggering function`)
-        const deferMessage = {"type": 5};
+        try {
+            return context.res = {
+                body: { "type": 5 }
+            };
+        } catch (err) {
+            context.log.error("ERROR", err);
+            throw err;
+        }
+        
+        context.log("After res.send");
 
         // req.body.data.name = name of slash function from discord
         // Need to send all options array to process if there are more than 2 options in command...
         axios.post(`https://playdatesbotdiscord.azurewebsites.net/api/${req.body.data.name}`, {
-            hostName: req.body.data.options[0].value,
-            gameName: req.body.data.options[1].value,
-            interaction_token: req.body.token
+            options: req.body.data.options,
+            interaction_token: req.body.token,
+            application_id: req.body.application_id
         });
-        context.done(null, deferMessage);
     }
 }
