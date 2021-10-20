@@ -12,14 +12,18 @@ module.exports = async function (context, req) {
         gameName: game
     });
     
-    context.log("Response?: " + JSON.stringify(apiResponse.body));
+    context.log("Response?: " + JSON.stringify(apiResponse.data));
 
-    const responseMessage = "I've done a thing, and this is a test."
+    const responseMessage = `The show ${apiResponse.data.title} on ${apiResponse.data.date} has been updated to ${apiResponse.data.game}`;
 
-    const discordResponse = await axios.patch(`https://discord.com/api/webhooks/${process.env.APPLICATION_ID}/${interactionToken}/message/@original`, {
-        content: `This is the updated message, about ${host} updating their show to ${game}`
+    const discordResponse = await axios.patch(`https://discord.com/api/webhooks/${process.env.APPLICATION_ID}/${interactionToken}`, {
+        content: responseMessage
     });
-    context.log("Discord response: " + JSON.stringify(discordResponse.body));
+    
+    if(discordResponse) {
+        context.log("Discord response: " + JSON.stringify(discordResponse.data));
+    }
+    
     context.res = {
         // status: 200, /* Defaults to 200 */
         body: responseMessage
