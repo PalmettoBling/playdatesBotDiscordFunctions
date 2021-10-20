@@ -26,7 +26,7 @@ module.exports = async function (context, req) {
     } else {
         context.log(`Message type ${req.body.type}, responding and triggering function`)
         try {
-            return context.res = {
+            context.res = {
                 body: { "type": 5 }
             };
         } catch (err) {
