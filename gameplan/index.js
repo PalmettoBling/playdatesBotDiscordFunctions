@@ -12,25 +12,16 @@ module.exports = async function (context, req) {
         hostName: host,
         gameName: game
     });
-    
-    context.log("Response?: " + JSON.stringify(apiResponse.data));
 
     const responseMessage = `The show ${apiResponse.data.title} on ${apiResponse.data.date} has been updated to ${apiResponse.data.game}`;
 
     try {
-        const discordResponse = await axios.post(`https://discord.com/api/webhooks/${applicationId}/${interactionToken}`, {
+        await axios.post(`https://discord.com/api/webhooks/${applicationId}/${interactionToken}`, {
             content: responseMessage
         });
     } catch (err) {
         context.log.error("ERROR", err);
         throw err;
-    }
-
-
-    if(discordResponse) {
-        context.log("Discord response: " + JSON.stringify(discordResponse.data));
-    } else {
-        context.log("No response");
     }
     
     context.done();
