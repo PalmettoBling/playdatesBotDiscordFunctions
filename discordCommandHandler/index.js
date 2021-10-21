@@ -26,20 +26,25 @@ module.exports = async function (context, req) {
     } else {
         context.log(`Message type ${req.body.type}, responding and triggering function`)
         try {
-            context.res = {
-                body: { "type": 5 }
+            // req.body.data.name = name of slash function from discord
+            // Need to send all options array to process if there are more than 2 options in command...
+            axios.post(`https://playdatesbotdiscord.azurewebsites.net/api/${req.body.data.name}`, {
+                options: req.body.data.options,
+                interaction_token: req.body.token,
+                application_id: req.body.application_id
+            });
+
+            return context.res = {
+                body: { 
+                    "type": 4,
+                    "data": {
+                        "content": "Processing your request."
+                    }
+                }
             };
         } catch (err) {
             context.log.error("ERROR", err);
             throw err;
         }
-
-        // req.body.data.name = name of slash function from discord
-        // Need to send all options array to process if there are more than 2 options in command...
-        axios.post(`https://playdatesbotdiscord.azurewebsites.net/api/${req.body.data.name}`, {
-            options: req.body.data.options,
-            interaction_token: req.body.token,
-            application_id: req.body.application_id
-        });
     }
 }
