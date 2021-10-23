@@ -19,7 +19,7 @@ module.exports = async function (context, req) {
         });
         context.log("Discord Response: " );
         context.log(discordResponse.status);
-        context.log(discordResponse.);
+        context.log(discordResponse.data);
     } catch (err) {
         context.log.error("ERROR", err);
         throw err;
