@@ -8,6 +8,9 @@ module.exports = async function (context, req) {
     const timestamp = req.headers['x-signature-timestamp'];
     const rawBody = req.rawBody;
 
+    context.log("Req Headers: ");
+    context.log(JSON.stringify(req.headers));
+
     context.log('Req Body: ');
     context.log(JSON.stringify(req.body));
 
@@ -18,7 +21,8 @@ module.exports = async function (context, req) {
         return context.res = { 
             status: 401,
         };
-    } else if (req.body.type == 1) {
+    } else 
+    if (req.body.type == 1) {
         context.log(`Message type ${req.body.type}, sending ACK type 1`);
         return context.res = { 
             body: { "type": 1 }
@@ -26,6 +30,15 @@ module.exports = async function (context, req) {
     } else {
         context.log(`Message type ${req.body.type}, responding and triggering function`)
         try {
+            context.res = { 
+                body: { "type": 5 },
+                headers: { "Content-Type": "application/json",
+                            "X-Signature-Ed25519": signature,
+                            "X-Signature-Timestamp": timestamp  
+                         },
+                status: 200
+            };
+
             // req.body.data.name = name of slash function from discord
             // Need to send all options array to process if there are more than 2 options in command...
             axios.post(`https://playdatesbotdiscord.azurewebsites.net/api/${req.body.data.name}`, {
@@ -34,14 +47,6 @@ module.exports = async function (context, req) {
                 application_id: req.body.application_id
             });
 
-            return context.res = {
-                body: { 
-                    "type": 4,
-                    "data": {
-                        "content": "Processing your request."
-                    }
-                }
-            };
         } catch (err) {
             context.log.error("ERROR", err);
             throw err;
