@@ -44,7 +44,8 @@ module.exports = async function (context, req) {
             axios.post(`https://playdatesbotdiscord.azurewebsites.net/api/${req.body.data.name}`, {
                 options: req.body.data.options,
                 interaction_token: req.body.token,
-                application_id: req.body.application_id
+                application_id: req.body.application_id,
+                interaction_id: req.body.id
             });
 
         } catch (err) {

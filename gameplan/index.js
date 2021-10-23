@@ -9,7 +9,9 @@ module.exports = async function (context, req) {
     const applicationId = req.body.application_id;
 
     context.log("New headers data: " );
-    context.log("Host: " + host + " / Game: " + game + " / InteractionToken: " + interactionToken + " / ApplicationId: " + applicationId);
+    context.log("Host: " + host + " / Game: " + game + " / InteractionToken: " + interactionToken + 
+        " / ApplicationId: " + applicationId + " / InteractionId: " + interactionId);
+    
     const apiResponse = await axios.put('https://www.xboxplaydates.us/ambassadorschedule/discord', {
         hostName: host,
         gameName: game
@@ -20,6 +22,9 @@ module.exports = async function (context, req) {
     try {
         await axios.patch(`https://discord.com/api/webhooks/${applicationId}/${interactionToken}/messages/@original`, {
             "content": responseMessage
+        },
+        { 
+            "Content-Type": "application/json"
         });
     } catch (err) {
         context.log.error("ERROR", err);
