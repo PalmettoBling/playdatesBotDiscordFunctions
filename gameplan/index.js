@@ -8,6 +8,8 @@ module.exports = async function (context, req) {
     const interactionToken = req.body.interaction_token;
     const applicationId = req.body.application_id;
 
+    context.log("New headers data: " );
+    context.log("Host: " + host + " / Game: " + game + " / InteractionToken: " + interactionToken + " / ApplicationId: " + applicationId);
     const apiResponse = await axios.put('https://www.xboxplaydates.us/ambassadorschedule/discord', {
         hostName: host,
         gameName: game
@@ -16,7 +18,7 @@ module.exports = async function (context, req) {
     const responseMessage = `The show ${apiResponse.data.title} on ${apiResponse.data.date} has been updated to ${apiResponse.data.game}`;
 
     try {
-        await axios.post(`https://discord.com/api/webhooks/${applicationId}/${interactionToken}`, {
+        await axios.post(`https://discord.com/api/webhooks/${applicationId}/${interactionToken}/messages/@original`, {
             content: responseMessage
         });
     } catch (err) {

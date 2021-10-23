@@ -14,9 +14,12 @@ module.exports = async function (context, req) {
     const responseMessage = `The show ${apiResponse.data.title} on ${apiResponse.data.date} has been updated to ${apiResponse.data.game}`;
 
     try {
-        await axios.post(`https://discord.com/api/webhooks/${applicationId}/${interactionToken}`, {
+        const discordResponse = await axios.post(`https://discord.com/api/webhooks/${applicationId}/${interactionToken}`, {
             content: responseMessage
         });
+        context.log("Discord Response: " );
+        context.log(discordResponse.status);
+        context.log(discordResponse.);
     } catch (err) {
         context.log.error("ERROR", err);
         throw err;
