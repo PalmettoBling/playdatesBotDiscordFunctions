@@ -6,23 +6,39 @@ module.exports = async function (context, req) {
     const host = req.body.options[0].value;
     const interactionToken = req.body.interaction_token;
     const applicationId = req.body.application_id;
+    const command = req.body.command;
 
     const apiResponse = await axios.put('https://www.xboxplaydates.us/ambassadorschedule/discord', {
-        hostName: host
+        hostName: host,
+        commandName: command
     });
 
-    const responseMessage = `The show ${apiResponse.data.title} on ${apiResponse.data.date} has been updated to ${apiResponse.data.game}`;
-
-    try {
-        const discordResponse = await axios.post(`https://discord.com/api/webhooks/${applicationId}/${interactionToken}`, {
-            content: responseMessage
-        });
-        context.log("Discord Response: " );
-        context.log(discordResponse.status);
-        context.log(discordResponse.data);
-    } catch (err) {
-        context.log.error("ERROR", err);
-        throw err;
+    if (apiResponse.status == "200") {
+        const responseMessage = `The show ${apiResponse.data.title} on ${apiResponse.data.date} has been updated to ${apiResponse.data.game}`;        
+        try {
+            await axios.patch(`https://discord.com/api/webhooks/${applicationId}/${interactionToken}/messages/@original`, {
+                "content": responseMessage
+            },
+            { 
+                "Content-Type": "application/json"
+            });
+        } catch (err) {
+            context.log.error("ERROR", err);
+            throw err;
+        }
+    } else {
+        const responseMessage = `${apiResponse.info}`;
+        try {
+            await axios.patch(`https://discord.com/api/webhooks/${applicationId}/${interactionToken}/messages/@original`, {
+                "content": responseMessage
+            },
+            { 
+                "Content-Type": "application/json"
+            });
+        } catch (err) {
+            context.log.error("ERROR", err);
+            throw err;
+        }
     }
     
     context.done();

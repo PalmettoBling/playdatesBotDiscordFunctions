@@ -7,28 +7,40 @@ module.exports = async function (context, req) {
     const game = req.body.options[1].value;
     const interactionToken = req.body.interaction_token;
     const applicationId = req.body.application_id;
-
-    context.log("New headers data: " );
-    context.log("Host: " + host + " / Game: " + game + " / InteractionToken: " + interactionToken + 
-        " / ApplicationId: " + applicationId + " / InteractionId: " + interactionId);
+    const command = req.body.command;
     
     const apiResponse = await axios.put('https://www.xboxplaydates.us/ambassadorschedule/discord', {
         hostName: host,
-        gameName: game
+        gameName: game,
+        commandName: command
     });
 
-    const responseMessage = `The show ${apiResponse.data.title} on ${apiResponse.data.date} has been updated to ${apiResponse.data.game}`;
-
-    try {
-        await axios.patch(`https://discord.com/api/webhooks/${applicationId}/${interactionToken}/messages/@original`, {
-            "content": responseMessage
-        },
-        { 
-            "Content-Type": "application/json"
-        });
-    } catch (err) {
-        context.log.error("ERROR", err);
-        throw err;
+    if (apiResponse.status == "200") {
+        const responseMessage = `The show ${apiResponse.data.title} on ${apiResponse.data.date} has been updated to ${apiResponse.data.game}`;        
+        try {
+            await axios.patch(`https://discord.com/api/webhooks/${applicationId}/${interactionToken}/messages/@original`, {
+                "content": responseMessage
+            },
+            { 
+                "Content-Type": "application/json"
+            });
+        } catch (err) {
+            context.log.error("ERROR", err);
+            throw err;
+        }
+    } else {
+        const responseMessage = apiResponse.data.info;        
+        try {
+            await axios.patch(`https://discord.com/api/webhooks/${applicationId}/${interactionToken}/messages/@original`, {
+                "content": responseMessage
+            },
+            { 
+                "Content-Type": "application/json"
+            });
+        } catch (err) {
+            context.log.error("ERROR", err);
+            throw err;
+        }
     }
     
     context.done();

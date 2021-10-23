@@ -45,7 +45,8 @@ module.exports = async function (context, req) {
                 options: req.body.data.options,
                 interaction_token: req.body.token,
                 application_id: req.body.application_id,
-                interaction_id: req.body.id
+                interaction_id: req.body.id,
+                command: req.body.data.name
             });
 
         } catch (err) {
