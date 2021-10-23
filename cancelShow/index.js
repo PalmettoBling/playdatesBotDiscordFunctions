@@ -8,13 +8,15 @@ module.exports = async function (context, req) {
     const applicationId = req.body.application_id;
     const command = req.body.command;
 
+    context.log("command: " + command);
+
     const apiResponse = await axios.put('https://www.xboxplaydates.us/ambassadorschedule/discord', {
         hostName: host,
         commandName: command
     });
 
     if (apiResponse.status == "200") {
-        const responseMessage = `The show ${apiResponse.data.title} on ${apiResponse.data.date} has been updated to ${apiResponse.data.game}`;        
+        const responseMessage = `The show ${apiResponse.data.title} on ${apiResponse.data.date} has been cancelled.`;        
         try {
             await axios.patch(`https://discord.com/api/webhooks/${applicationId}/${interactionToken}/messages/@original`, {
                 "content": responseMessage
