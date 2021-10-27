@@ -2,23 +2,32 @@ const { default: axios } = require("axios");
 
 module.exports = async function (context, req) {
     context.log('JavaScript HTTP trigger function processed a request.');
-    //channelName, quoteId, game
+    
+    context.log("Req Body: ");
+    context.log(req.body);
 
-    const channel = req.body.options[0].value;
-    const id = req.body.options[1].value;
-    const game = req.body.options[2].value;
+    const options = req.body.options;
     const interactionToken = req.body.interaction_token;
     const applicationId = req.body.application_id;
-    const command = req.body.command;
+    const channel = options[0].value;
+    let id;
+
+    context.log("Options: ");
+    context.log(JSON.stringify(options));
+
+    if (options.length > 1) {
+        
+        id = options[1].value;
+    }
 
     const apiResponse = await axios.get('https://www.xboxplaydates.us/playdatesquotes/specificquote', {
         channelName: channel,
-        quoteId: id,
-        game: game
+        quoteId: id
     });
+    context.log("sent req to playdatesbot.");
 
     if (apiResponse.status == "200") {
-        const responseMessage = `${apiResponse.quote} -${apiResponse.attribution} ${apiResponse.dateOfQuote} ${apiResponse.game}`;
+        const responseMessage = `${apiResponse.data.quote} -${apiResponse.data.attribution} ${apiResponse.data.dateOfQuote} ${apiResponse.data.game}`;
         try {
             await axios.patch(`https://discord.com/api/webhooks/${applicationId}/${interactionToken}/messages/@original`, {
                 "content": responseMessage
