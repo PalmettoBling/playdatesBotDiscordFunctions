@@ -15,19 +15,21 @@ module.exports = async function (context, req) {
     context.log("Options: ");
     context.log(JSON.stringify(options));
 
-    if (options.length > 1) {
-        
+    if (options[1]) {
         id = options[1].value;
     }
 
-    const apiResponse = await axios.get('https://www.xboxplaydates.us/playdatesquotes/specificquote', {
+    context.log("Channel: " + channel);
+    context.log("ID: " + id);
+
+    const apiResponse = await axios.post('https://www.xboxplaydates.us/playdatesquotes/specificquote', {
         channelName: channel,
         quoteId: id
     });
     context.log("sent req to playdatesbot.");
 
     if (apiResponse.status == "200") {
-        const responseMessage = `${apiResponse.data.quote} -${apiResponse.data.attribution} ${apiResponse.data.dateOfQuote} ${apiResponse.data.game}`;
+        const responseMessage = `#${apiResponse.data.id}: ${apiResponse.data.quote} -${apiResponse.data.attribution} ${apiResponse.data.dateOfQuote} ${apiResponse.data.game} (${channel})`;
         try {
             await axios.patch(`https://discord.com/api/webhooks/${applicationId}/${interactionToken}/messages/@original`, {
                 "content": responseMessage
