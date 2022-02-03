@@ -13,16 +13,14 @@ module.exports = async function (context, req) {
     const options = req.body.options;
     const interactionToken = req.body.interaction_token;
     const applicationId = req.body.application_id;
+    context.log("Options: ");
+    context.log(options);
     
-
-    if (options[0]) {
+    if (options) {
         action = options[0].name;
-        id = options[0].value;    
+        id = options[0].value;   
     }
-
-    context.log("Action: " + action);
-    context.log("ID: " + id);
-
+        
     // action if there are no options
     // Gathers quotes available for review
     if (!action) {
