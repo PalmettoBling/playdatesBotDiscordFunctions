@@ -25,16 +25,18 @@ module.exports = async function (context, req) {
     // Gathers quotes available for review
     if (!action) {
         // database function trigger to get details?  All another azure function, get data and return...
-        apiResponse = await axios.get("");
+        context.log("No action, getting quotes");
+        apiResponse = await axios.get("https://www.xboxplaydates.us/api/extensionreview");
         context.log("Sent request for quotes");
-        context.log("Response data: " + apiResponse.data.info);
+        context.log("Response data: " + apiResponse.data);
         responseMessage = apiResponse.data.info;
     } else {
         //action if there are options to approve or deny a specific quote in the review database
         if (action == "approve") {
             // action to approve a quote and move to official database
             // call playdates bot API to add quote
-            apiResponse = await axios.patch("", {
+            context.log("Approving quote");
+            apiResponse = await axios.patch("https://www.xboxplaydates.us/api/extensionreview", {
                 "action": action,
                 "id": id
             });
@@ -42,7 +44,8 @@ module.exports = async function (context, req) {
         } else if (action == "deny") { 
             //action to deny quote and remove from review database
             // call database azure function to remove item from DB
-            apiResponse = await axios.patch("", {
+            context.log("Denying quote");
+            apiResponse = await axios.patch("https://www.xboxplaydates.us/api/extensionreview", {
                 "action": action,
                 "id": id
             });
@@ -50,7 +53,9 @@ module.exports = async function (context, req) {
         }
     }
 
+    context.log("Response message out of if gate: " + responseMessage);
     try {
+        context.log("Sending response to discord");
         await axios.patch(`https://discord.com/api/webhooks/${applicationId}/${interactionToken}/messages/@original`, {
             "content": responseMessage
         },
@@ -61,6 +66,6 @@ module.exports = async function (context, req) {
         context.log.error("ERROR", err);
         throw err;
     }
-
+    context.log("Done");
     context.done();
 }
