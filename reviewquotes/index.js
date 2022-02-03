@@ -40,7 +40,7 @@ module.exports = async function (context, req) {
                 "action": action,
                 "id": id
             });
-            responseMessage = "Quote approved.";
+            responseMessage = apiResponse.data.info;
         } else if (action == "deny") { 
             //action to deny quote and remove from review database
             // call database azure function to remove item from DB
@@ -48,7 +48,7 @@ module.exports = async function (context, req) {
                 "action": action,
                 "id": id
             });
-            responseMessage = "Quote DENIED. :NoSonic: :NoSonic: :NoSonic:";
+            responseMessage = apiResponse.data.info;
         }
     }
 
