@@ -18,7 +18,7 @@ module.exports = async function (context, req) {
         designation = "next";
     }
 
-    apiResponse = await axios.get('https://www.xboxplaydates.us/api/upcoming', {
+    apiResponse = await axios.patch('https://www.xboxplaydates.us/api/upcoming', {
         option: designation
     });
 
