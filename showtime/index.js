@@ -12,43 +12,42 @@ module.exports = async function (context, req) {
     const applicationId = req.body.application_id;
     const interactionId = req.body.id;
 
-    let showHost = options[0].host;
-    let showName = options[0].title;
-    let showGame = options[0].game;
-    let showDate = options[0].date;
-    let showHour = options[0].hour;
-    let showMinute = options[0].minute;
-    let showDuration = options[0].duration;
+    let host = options[0].value;
+    let name = options[1].value;
+    let game = options[2].value;
+    let date = options[3].value;
+    let hour = options[4].value;
+    let minute = options[5].value;
+    let duration = options[6].value;
 
-    const apiResponse = await axios.put('https://www.xboxplaydates.us/api/scheduleambassadorshow', {
-        host: showHost,
-        title: showName,
-        game: showGame,
-        date: showDate,
-        hour: showHour,
-        minute: showMinute,
-        duration: showDuration
+    let showName = name + " with " + host;
+    context.log("Show Name: " + showName);
+
+    const apiResponse = await axios.post('https://www.xboxplaydates.us/ambassadorschedule/create', {
+        "showName": showName,
+        "showHour": hour,
+        "showMin": minute,
+        "showDate": date,
+        "showDuration": duration
     });
 
     context.log("API Response: ");
     context.log(apiResponse);
+    let showOptions = [
+        {
+            "value": host
+        },
+        {
+            "value": game
+        }
+    ];            
 
-    if (apiResponse.status == "200") {
-        let showOptions = [
-            {
-                "value": showHost
-            },
-            {
-                "value": showGame
-            }
-        ];            
-
-        axios.post(`https://playdatesbotdiscord.azurewebsites.net/api/gameplan`, {
-            options: showOptions,
-            interaction_token: interactionToken,
-            application_id: applicationId,
-            interaction_id: interactionId,
-            command: "upcoming"
-        });
-    }
+    axios.post(`https://playdatesbotdiscord.azurewebsites.net/api/gameplan`, {
+        options: showOptions,
+        interaction_token: interactionToken,
+        application_id: applicationId,
+        interaction_id: interactionId,
+        command: "gameplan"
+    });
+    
 }
