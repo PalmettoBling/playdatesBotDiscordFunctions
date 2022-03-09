@@ -9,6 +9,9 @@ module.exports = async function (context, req) {
     const applicationId = req.body.application_id;
     const command = req.body.command;
     
+    context.log("Game: " + game);
+    context.log("Host: " + host);
+
     const apiResponse = await axios.put('https://www.xboxplaydates.us/ambassadorschedule/discord', {
         hostName: host,
         gameName: game,
@@ -16,17 +19,32 @@ module.exports = async function (context, req) {
     });
 
     if (apiResponse.status == "200") {
-        const responseMessage = `The show ${apiResponse.data.title} on ${apiResponse.data.date} has been updated to ${apiResponse.data.game}`;        
-        try {
-            await axios.patch(`https://discord.com/api/webhooks/${applicationId}/${interactionToken}/messages/@original`, {
-                "content": responseMessage
-            },
-            { 
-                "Content-Type": "application/json"
-            });
-        } catch (err) {
-            context.log.error("ERROR", err);
-            throw err;
+        if (apiResponse.data.info === 'Was unable to update Segment, not sure why, though...') {
+            const responseMessage = `Something went wrong. I'm not sure what. I'm not sure where. But _something_ is wrong.  Check to see if the command stuck with an /upcoming ${host} ?  I don't know, I'm a programmer not a damn wizard.`;
+            try {
+                await axios.patch(`https://discord.com/api/webhooks/${applicationId}/${interactionToken}/messages/@original`, {
+                    "content": responseMessage
+                },
+                { 
+                    "Content-Type": "application/json"
+                });
+            } catch (err) {
+                context.log.error("ERROR", err);
+                throw err;
+            }
+        } else {
+            const responseMessage = `The show ${apiResponse.data.title} on ${apiResponse.data.date} has been updated to ${apiResponse.data.game}`;        
+            try {
+                await axios.patch(`https://discord.com/api/webhooks/${applicationId}/${interactionToken}/messages/@original`, {
+                    "content": responseMessage
+                },
+                { 
+                    "Content-Type": "application/json"
+                });
+            } catch (err) {
+                context.log.error("ERROR", err);
+                throw err;
+            }
         }
     } else {
         const responseMessage = apiResponse.data.info;        

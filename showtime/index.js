@@ -23,7 +23,7 @@ module.exports = async function (context, req) {
     let showName = name + " with " + host;
     context.log("Show Name: " + showName);
 
-    const apiResponse = await axios.post('https://www.xboxplaydates.us/ambassadorschedule/create', {
+    let apiResponse = await axios.post('https://www.xboxplaydates.us/api/scheduleambassadorshow', {
         "showName": showName,
         "showHour": hour,
         "showMin": minute,
@@ -31,23 +31,40 @@ module.exports = async function (context, req) {
         "showDuration": duration
     });
 
-    context.log("API Response: ");
-    context.log(apiResponse);
-    let showOptions = [
-        {
-            "value": host
-        },
-        {
-            "value": game
+    if (apiResponse.status == "200") {
+        let showOptions = [
+            {
+                "value": host
+            },
+            {
+                "value": game
+            }
+        ];            
+        try {
+            axios.post(`https://playdatesbotdiscord.azurewebsites.net/api/gameplan`, {
+                options: showOptions,
+                interaction_token: interactionToken,
+                application_id: applicationId,
+                interaction_id: interactionId,
+                command: "gameplan"
+            });
+        } catch(err) {
+            context.log.error("ERROR", err);
+            throw err;
         }
-    ];            
-
-    axios.post(`https://playdatesbotdiscord.azurewebsites.net/api/gameplan`, {
-        options: showOptions,
-        interaction_token: interactionToken,
-        application_id: applicationId,
-        interaction_id: interactionId,
-        command: "gameplan"
-    });
+    } else {
+        const responseMessage = apiResponse.data.info;
+        try {
+            axios.patch(`https://discord.com/api/webhooks/${applicationId}/${interactionToken}/messages/${interactionId}`, {
+                "content": responseMessage
+            },
+            { 
+                "Content-Type": "application/json"
+            });
+        } catch (error) {
+            context.log(error);
+            throw error;
+        }
+    }
     
 }
