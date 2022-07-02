@@ -7,8 +7,8 @@
     "test": "echo \"No tests yet...\""
   },
   "dependencies": {
+    "@azure/storage-blob": "^12.10.0",
     "axios": "^0.23.0",
     "discord-interactions": "^2.4.1"
-  },
-  "devDependencies": {}
+  }
 }

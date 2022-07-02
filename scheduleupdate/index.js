@@ -1,7 +1,12 @@
 const { default: axios } = require('axios');
+const { BlobServiceClient } = require('@azure/storage-blob');
 
 module.exports = async function (context, req) {
     context.log('JavaScript HTTP trigger function processed a request.');
+
+    const blobServiceClient = new BlobServiceClient(process.env.AzureWebJobsStorage);
+    const containerClient = blobServiceClient.getContainerClient("images");
+    const blobClient = containerClient.getBlobClient("amby_calendar.png");
 
     context.log("Req Body: ");
     context.log(req.body);
@@ -16,9 +21,11 @@ module.exports = async function (context, req) {
     const attachmentObject = resolvedObject[`${imageId}`];
     const scheduleImage = attachmentObject.url;
 
-    context.bindings.imageBlob = scheduleImage;
-    context.bindings.imageBlob.
+    const blobUploadResponse = await blobClient.beginCopyFromURL(scheduleImage);
+    const result = await blobUploadResponse.pollUntilDone();
 
+    context.log("Blob Upload Response: " + result);
+    
     const responseMessage = "I think the show schedule image is updated...";
     try {
         axios.patch(`https://discord.com/api/webhooks/${applicationId}/${interactionToken}/messages/${interactionId}`, {
