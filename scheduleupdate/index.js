@@ -15,8 +15,8 @@ module.exports = async function (context, req) {
     const scheduleImage = req.body.resolved.attachments.imageId.url;
     context.log("Image Url: " + scheduleImage);
 
+    context.bindings.imageBlob = scheduleImage;
 
-    
     const responseMessage = "I think the show schedule image is updated...";
     try {
         axios.patch(`https://discord.com/api/webhooks/${applicationId}/${interactionToken}/messages/${interactionId}`, {
