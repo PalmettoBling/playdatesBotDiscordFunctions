@@ -12,10 +12,12 @@ module.exports = async function (context, req) {
     
     const imageId = req.body.options[0].value;
     context.log("Image ID: " + imageId);
-    const scheduleImage = req.body.resolved.attachments.imageId.url;
-    context.log("Image Url: " + scheduleImage);
+    const resolvedObject = req.body.resolved.attachments;
+    const attachmentObject = resolvedObject[`${imageId}`];
+    const scheduleImage = attachmentObject.url;
 
     context.bindings.imageBlob = scheduleImage;
+    context.bindings.imageBlob.
 
     const responseMessage = "I think the show schedule image is updated...";
     try {

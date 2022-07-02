@@ -19,7 +19,7 @@
       "name": "imageBlob",
       "type": "blob",
       "path": "images/amby_calendar.png",
-      "connection": "DefaultEndpointsProtocol=https;AccountName=playdatesbotdiscord;AccountKey=ipHq0NtkpPbQniH32DJC32QU8pmEYxoptX2jY0eqc8MiAGZUhBNZw54CLIXhlb0I2fnFkq3vtSEk6fh1h9kbMQ==;EndpointSuffix=core.windows.net",
+      "connection": "AzureWebJobsStorage",
       "direction": "out"
     }
   ]
