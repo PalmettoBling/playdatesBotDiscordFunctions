@@ -27,7 +27,7 @@ module.exports = async function (context, req) {
     });
     context.log("Logic App contacted...");
     
-    const responseMessage = "I think the show schedule image is updated...";
+    const responseMessage = "The schedule image has been updated.  It should be reflected at the static URL (https://playdatesbotdiscord.blob.core.windows.net/images/amby_calendar.png).";
     context.log("Response message set.");
 
     try {
