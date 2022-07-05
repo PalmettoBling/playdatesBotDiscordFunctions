@@ -1,7 +1,5 @@
 const { default: axios } = require('axios');
 const { BlobServiceClient } = require('@azure/storage-blob');
-const download = require('image-downloader');
-const path = require('path');
 
 module.exports = async function (context, req) {
     context.log('JavaScript HTTP trigger function processed a request.');
@@ -23,40 +21,20 @@ module.exports = async function (context, req) {
     const attachmentObject = resolvedObject[`${imageId}`];
     const scheduleImage = attachmentObject.proxy_url;
     context.log("URL: " + scheduleImage);
-    const filePath = path.resolve(__dirname, "amby_calendar.png");
-    context.log("File Path: " + filePath);
-
-    const file = await download.image({
-        url: scheduleImage, 
-        dest: filePath
+    
+    const logicAppResponse = await axios.post('https://prod-05.eastus.logic.azure.com:443/workflows/bbd3850e68be43a4923323ae5da5cc82/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=fWfh-YzuGV_x1eLwfv0d636kuT4jrYBt83_C6N6GvqE', {
+        scheduleImage
     });
-
-    //const file = FS.createWriteStream("scheduleupdate/amby_calendar.png");
-
-    // const response = await axios({
-    //     method: 'GET',
-    //     url: scheduleImage,
-    //     responseType: 'stream'
-    // });
-
-    //context.log("Response data pipe.");
-    //await response.data.pipe(file);
-
-    context.log("update to blockblob.");
-    await blockBlobClient.uploadFile(file);
+    context.log("Logic App contacted...");
     
-    //await blockBlobClient.beginCopyFromURL(scheduleImage);
-    //context.bindings.imageBlob = await axios.get(scheduleImage);
-    //========================    
-    //await blockBlobClient.uploadStream(response.data, response.data.length);
-    
-    context.log("Response message set.");
     const responseMessage = "I think the show schedule image is updated...";
+    context.log("Response message set.");
+
     try {
-        axios.patch(`https://discord.com/api/webhooks/${applicationId}/${interactionToken}/messages/${interactionId}`, {
-            "content": responseMessage
+        axios.patch(`https://discord.com/api/webhooks/${applicationId}/${interactionToken}/messages/@original`, {
+            content: responseMessage
         },
-        { 
+        {
             "Content-Type": "application/json"
         });
     } catch (error) {
