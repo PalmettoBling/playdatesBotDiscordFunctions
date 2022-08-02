@@ -32,12 +32,14 @@ module.exports = async function (context, req) {
         "showGame": game
     });
 
-    console.log("API Response: " + apiResponse.data);
+    context.log("Api Response: " + apiResponse);
+    context.log("API Response Data: " + apiResponse.data);
 
     if (apiResponse.status == "200") {
+        context.log("Status 200");
         const responseMessage = apiResponse.data.info;
         try {
-            axios.patch(`https://discord.com/api/webhooks/${applicationId}/${interactionToken}/messages/${interactionId}`, {
+            axios.patch(`https://discord.com/api/webhooks/${applicationId}/${interactionToken}/messages/@original`, {
                 "content": responseMessage
             },
             { 
@@ -48,9 +50,10 @@ module.exports = async function (context, req) {
             throw error;
         }
     } else {
+        context.log("Status " + apiResponse.status);
         const responseMessage = "There was an error processing this request."
         try {
-            axios.patch(`https://discord.com/api/webhooks/${applicationId}/${interactionToken}/messages/${interactionId}`, {
+            axios.patch(`https://discord.com/api/webhooks/${applicationId}/${interactionToken}/messages/@original`, {
                 "content": responseMessage
             },
             { 
