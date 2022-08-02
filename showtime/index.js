@@ -32,6 +32,8 @@ module.exports = async function (context, req) {
         "showGame": game
     });
 
+    console.log("API Response: " + apiResponse.data);
+
     if (apiResponse.status == "200") {
         const responseMessage = apiResponse.data.info;
         try {
