@@ -28,32 +28,25 @@ module.exports = async function (context, req) {
         "showHour": hour,
         "showMin": minute,
         "showDate": date,
-        "showDuration": duration
+        "showDuration": duration,
+        "showGame": game
     });
 
     if (apiResponse.status == "200") {
-        let showOptions = [
-            {
-                "value": host
-            },
-            {
-                "value": game
-            }
-        ];            
+        const responseMessage = apiResponse.data.info;
         try {
-            axios.post(`https://playdatesbotdiscord.azurewebsites.net/api/gameplan`, {
-                options: showOptions,
-                interaction_token: interactionToken,
-                application_id: applicationId,
-                interaction_id: interactionId,
-                command: "gameplan"
+            axios.patch(`https://discord.com/api/webhooks/${applicationId}/${interactionToken}/messages/${interactionId}`, {
+                "content": responseMessage
+            },
+            { 
+                "Content-Type": "application/json"
             });
-        } catch(err) {
-            context.log.error("ERROR", err);
-            throw err;
+        } catch (error) {
+            context.log(error);
+            throw error;
         }
     } else {
-        const responseMessage = apiResponse.data.info;
+        const responseMessage = "There was an error processing this request."
         try {
             axios.patch(`https://discord.com/api/webhooks/${applicationId}/${interactionToken}/messages/${interactionId}`, {
                 "content": responseMessage
