@@ -46,7 +46,7 @@ module.exports = async function (context, req) {
                 throw err;
             }
         } else {
-            const responseMessage = `The show ${apiResponse.data.title} on ${apiResponse.data.date} has been updated to ${apiResponse.data.game}`;        
+            const responseMessage = `The show ${apiResponse.data.title} on **${apiResponse.data.date}** has been updated to ${apiResponse.data.game}`;        
             try {
                 await axios.patch(`https://discord.com/api/webhooks/${applicationId}/${interactionToken}/messages/@original`, {
                     "content": responseMessage
