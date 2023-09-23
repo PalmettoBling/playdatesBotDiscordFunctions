@@ -7,6 +7,12 @@ module.exports = async function (context, req) {
     const signature = req.headers['x-signature-ed25519'];
     const timestamp = req.headers['x-signature-timestamp'];
     const rawBody = req.rawBody;
+    
+    if (req.body.data.resolved) {
+        const resolvedData = req.body.data.resolved;
+    } else {
+        const resolvedData = null;
+    }
 
     context.log("Req Headers: ");
     context.log(JSON.stringify(req.headers));
@@ -49,6 +55,7 @@ module.exports = async function (context, req) {
                 command: req.body.data.name,
                 resolved: req.body.data.resolved
             });
+            context.log(`Posted to ${req.body.data.name}`)
 
         } catch (err) {
             context.log.error("ERROR", err);
