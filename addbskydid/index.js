@@ -12,7 +12,7 @@ module.exports = async function (context, req) {
     context.log("user: " + userName);
     context.log("bsky DID: " + bskyDid);
 
-    const triggerDnsFunction = await axios.post('https://bskydnsdid.azurewebsites.net/api/psDnsCreate?code=sk7GZ1pwEmvpS5f8sHJ7l7B1rvtJpLhhjIcaAzjxvi4CAzFuB7ZT7Q==', {
+    const triggerDnsFunction = await axios.post('https://bskydnsdid.azurewebsites.net/api/psDnsCreate', {
         user: userName,
         did: bskyDid
     });
