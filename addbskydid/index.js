@@ -19,7 +19,7 @@ module.exports = async function (context, req) {
     context.log("Posted to DNS Function");
 
     if (triggerDnsFunction.status == "200") {
-        const responeMessage = `Processing records for @${userName}.XboxPlaydates.me`
+        const responseMessage = `Processing records for @${userName}.XboxPlaydates.me`
         try {
             await axios.patch(`https://discord.com/api/webhooks/${applicationId}/${interactionToken}/messages/@original`, {
                 "content": responseMessage
